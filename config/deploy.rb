@@ -1,15 +1,15 @@
 require "bundler/capistrano"
 
-server "178.xxx.xxx.xxx", :web, :app, :db, primary: true
+server "176.58.114.79", :web, :app, :db, primary: true
 
-set :application, "blog"
+set :application, "blogstore"
 set :user, "deployer"
 set :deploy_to, "/home/#{user}/apps/#{application}"
 set :deploy_via, :remote_cache
 set :use_sudo, false
 
 set :scm, "git"
-set :repository, "git@github.com:eifion/#{application}.git"
+set :repository, "git@github.com/tritter/blogstore.git"
 set :branch, "master"
 
 default_run_options[:pty] = true
@@ -29,13 +29,13 @@ namespace :deploy do
     sudo "ln -nfs #{current_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}"
     sudo "ln -nfs #{current_path}/config/unicorn_init.sh /etc/init.d/unicorn_#{application}"
     run "mkdir -p #{shared_path}/config"
-    put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
+    put File.read("config/mongoid.yml"), "#{shared_path}/config/mongoid.yml"
     puts "Now edit the config files in #{shared_path}."
   end
   after "deploy:setup", "deploy:setup_config"
 
   task :symlink_config, roles: :app do
-    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    run "ln -nfs #{shared_path}/config/mongoid.yml #{release_path}/config/mongoid.yml"
   end
   after "deploy:finalize_update", "deploy:symlink_config"
 
