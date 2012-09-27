@@ -11,7 +11,7 @@ namespace :mongodb do
     run "#{sudo} apt-get -y update"
     run "#{sudo} apt-get -y install mongodb-10gen"
     run "mongo admin --eval \"db.getSiblingDB('admin').addUser('root', '#{mongodb_password}');\""
-    #run "#{sudo} rm  /etc/mongodb.conf"
+    run "#{sudo} rm -f  /etc/mongodb.conf"
     template "mongodb.conf.erb", "/tmp/mongodb_conf"
     run "#{sudo} mv /tmp/mongodb_conf /etc/mongodb.conf"
     restart
@@ -33,7 +33,7 @@ namespace :mongodb do
 
   desc "Symlink the database.yml file into latest release"
   task :symlink, roles: :app do
-    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    run "ln -nfs #{shared_path}/config/mongoid.yml #{release_path}/config/mongoid.yml"
   end
   after "deploy:finalize_update", "mongodb:symlink"
   
